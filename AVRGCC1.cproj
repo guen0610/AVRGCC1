@@ -54,6 +54,8 @@
         </avrgcc.linker.libraries.Libraries>
       </AvrGcc>
     </ToolchainSettings>
+    <UsesExternalMakeFile>False</UsesExternalMakeFile>
+    <ExternalMakeFilePath>C:\Users\Batbayar\Documents\AVRStudio 5.1\AVRGCC1\AVRGCC1\Makefile.uart</ExternalMakeFilePath>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AVRGCC1.c">
@@ -62,6 +64,17 @@
     <Compile Include="lcd.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="uart.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="uart.h">
+      <SubType>compile</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Makefile.uart">
+      <SubType>compile</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>

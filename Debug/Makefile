@@ -35,7 +35,8 @@ SUBDIRS :=
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
-../AVRGCC1.c
+../AVRGCC1.c \
+../uart.c
 
 
 PREPROCESSING_SRCS += 
@@ -45,19 +46,23 @@ ASM_SRCS +=
 
 
 OBJS +=  \
-AVRGCC1.o
+AVRGCC1.o \
+uart.o
 
 
 OBJS_AS_ARGS +=  \
-AVRGCC1.o
+AVRGCC1.o \
+uart.o
 
 
 C_DEPS +=  \
-AVRGCC1.d
+AVRGCC1.d \
+uart.d
 
 
 C_DEPS_AS_ARGS +=  \
-AVRGCC1.d
+AVRGCC1.d \
+uart.d
 
 
 OUTPUT_FILE_PATH +=AVRGCC1.elf
@@ -69,6 +74,8 @@ ADDITIONAL_DEPENDENCIES:=
 OUTPUT_FILE_DEP:= ./makedep.mk
 
 # AVR32/GNU C Compiler
+
+
 
 
 
