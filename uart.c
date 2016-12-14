@@ -62,7 +62,38 @@ LICENSE:
     defined(__AVR_AT90S4434__) || defined(__AVR_AT90S8535__) || \
     defined(__AVR_ATmega103__)
  /* old AVR classic or ATmega103 with one UART */
- #define UART0_RECEIVE_INTERRUPT   UAUART0_DATA        UDR
+ #define UART0_RECEIVE_INTERRUPT   UART_RX_vect 
+ #define UART0_TRANSMIT_INTERRUPT  UART_UDRE_vect
+ #define UART0_STATUS      USR
+ #define UART0_CONTROL     UCR
+ #define UART0_DATA        UDR  
+ #define UART0_UDRIE       UDRIE
+ #define UART0_UBRRL       UBRR
+ #define UART0_BIT_U2X     U2X
+ #define UART0_BIT_RXCIE   RXCIE
+ #define UART0_BIT_RXEN    RXEN
+ #define UART0_BIT_TXEN    TXEN
+#elif defined(__AVR_AT90S2333__) || defined(__AVR_AT90S4433__)
+ /* old AVR classic with one UART */
+ #define UART0_RECEIVE_INTERRUPT   UART_RX_vect 
+ #define UART0_TRANSMIT_INTERRUPT  UART_UDRE_vect
+ #define UART0_STATUS      UCSRA
+ #define UART0_CONTROL     UCSRB
+ #define UART0_DATA        UDR 
+ #define UART0_UDRIE       UDRIE
+ #define UART0_UBRRL       UBRR
+ #define UART0_BIT_U2X     U2X
+ #define UART0_BIT_RXCIE   RXCIE
+ #define UART0_BIT_RXEN    RXEN
+ #define UART0_BIT_TXEN    TXEN
+#elif defined(__AVR_AT90PWM216__) || defined(__AVR_AT90PWM316__) 
+ /* AT90PWN216/316 with one USART */
+ #define UART0_RECEIVE_INTERRUPT   USART_RX_vect
+ #define UART0_TRANSMIT_INTERRUPT  USART_UDRE_vect
+ #define UART0_STATUS      UCSRA
+ #define UART0_CONTROL     UCSRB
+ #define UART0_CONTROLC    UCSRC
+ #define UART0_DATA        UDR
  #define UART0_UDRIE       UDRIE
  #define UART0_UBRRL       UBRRL
  #define UART0_UBRRH       UBRRH
