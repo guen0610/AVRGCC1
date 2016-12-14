@@ -1,0 +1,118 @@
+#ifndef __AVR_ATmega128__
+#define __AVR_ATmega128__
+#endif
+#ifndef F_CPU
+#define F_CPU 1000000UL
+#endif
+
+
+
+#include <avr/io.h>
+#include <util/delay.h>
+#include "lcd.h"
+#include <avr/interrupt.h>
+#include "uart.h"
+
+#define UART_BAUD_RATE 9600   
+volatile unsigned char coming; 
+
+#include <avr/io.h>
+
+int main(void)
+{
+    char temp[10];
+    unsigned int c;
+    uart_init( UART_BAUD_SELECT(UART_BAUD_RATE,F_CPU) ); 
+    DDRA |= (1<<1); //relay pin
+    PORTA &= ~(_BV(1));
+    DDRC = 0xFF;    // lcd pins
+    PORTC &= ~(_BV(3));
+    PORTC &= ~(_BV(2));
+    PORTC &= ~(_BV(1));
+    PORTC &= ~(_BV(0));
+ 
+// configure the microprocessor pins for the control lines
+    lcd_E_ddr |= (1<<lcd_E_bit);                    // E line - output
+    lcd_RS_ddr |= (1<<lcd_RS_bit);                  // RS line - output
+ 
+    lcd_RS_port &= ~(1<<lcd_RS_bit);
+    _delay_ms(1000);
+    lcd_init_4d();
+    lcd_write_instruction_4d(lcd_Clear);
+    _delay_ms(10);
+    lcd_write_string_4d("Mainboard");
+    sei();
+    while(1)
+    {
+        /*
+         * Get received character from ringbuffer
+         * uart_getc() returns in the lower byte the received character and 
+         * in the higher byte (bitmask) the last receive error
+         * UART_NO_DATA is returned when no data is available.
+         *
+         */
+        c = uart_getc();
+		
+		
+			uart_putc(c);
+			_delay_ms(2000);
+		
+        if ( c & UART_NO_DATA )
+        {
+            /* 
+             * no data available from UART 
+             */
+		
+        }
+        else
+        {
+            /*
+             * new data available from UART
+             * check for Frame or Overrun error
+             */
+            if ( c & UART_FRAME_ERROR )
+            {
+                /* Framing Error detected, i.e no stop bit detected */
+				lcd_write_instruction_4d(lcd_Clear);
+				_delay_ms(10);
+                lcd_write_string_4d("UART Frame Error: ");
+            }
+            if ( c & UART_OVERRUN_ERROR )
+            {
+                /* 
+                 * Overrun, a character already present in the UART UDR register was 
+                 * not read by the interrupt handler before the next character arrived,
+                 * one or more received characters have been dropped
+                 */
+				lcd_write_instruction_4d(lcd_Clear);
+				_delay_ms(10);
+                lcd_write_string_4d("UART Overrun Error: ");
+            }
+            if ( c & UART_BUFFER_OVERFLOW )
+            {
+                /* 
+                 * We are not reading the receive buffer fast enough,
+                 * one or more received character have been dropped 
+                 */
+				lcd_write_instruction_4d(lcd_Clear);
+				_delay_ms(10);
+                lcd_write_string_4d("Buffer overflow error: ");
+            }
+            /* 
+             * send received character back
+             */
+            //getBin(c,temp);
+            //uart_putc( (unsigned char)c );
+			//uart_puts(temp);
+        }
+    }
+//***************************************************************************
+
+}
+void getBin(int num, char *str)
+{
+  *(str+5) = '\0';
+  int mask = 0x10 << 1;
+  while(mask >>= 1)
+    *str++ = !!(mask & num) + '0';
+}
