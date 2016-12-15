@@ -19,7 +19,7 @@ DESCRIPTION:
 #define __AVR_ATmega128A__
 /* define CPU frequency in Hz in Makefile */
 #ifndef F_CPU
-#define F_CPU 1000000UL
+#define F_CPU 8000000UL
 #endif
 
 /* Define UART buad rate here */
@@ -80,7 +80,6 @@ int main(void)
     itoa( num, buffer, 10);   // convert interger into string (decimal format)         
     uart1_puts(buffer);        // and transmit string to UART
 
-    
     /*
      * Transmit single character to UART
      */
@@ -138,3 +137,4 @@ int main(void)
     }
     
 }
+
