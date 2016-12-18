@@ -51,7 +51,7 @@ int main(void)
      *  or 
      *  UART_BAUD_SELECT_DOUBLE_SPEED() ( double speed mode)
      */
-    uart1_init( UART_BAUD_SELECT(UART_BAUD_RATE,F_CPU) ); 
+    uart_init( UART_BAUD_SELECT(UART_BAUD_RATE,F_CPU) ); 
     
     /*
      * now enable interrupt, since UART library is interrupt controlled
@@ -59,18 +59,19 @@ int main(void)
     sei();
     
     /*
-     *  Transmit string to UART
+     *  Transmit string to 
+	 .02
      *  The string is buffered by the uart library in a circular buffer
      *  and one character at a time is transmitted to the UART using interrupts.
      *  uart_puts() blocks if it can not write the whole string to the circular 
      *  buffer
      */
-    uart1_puts("String stored in SRAM\n");
+    uart_puts("String stored in SRAM\n");
     
     /*
      * Transmit string from program memory to UART
      */
-    uart1_puts_P("String stored in FLASH\n");
+    uart_puts_P("String stored in FLASH\n");
     
         
     /* 
@@ -78,12 +79,12 @@ int main(void)
      * before transmitting via UART
      */     
     itoa( num, buffer, 10);   // convert interger into string (decimal format)         
-    uart1_puts(buffer);        // and transmit string to UART
+    uart_puts(buffer);        // and transmit string to UART
 
     /*
      * Transmit single character to UART
      */
-    uart1_putc('\r');
+    uart_putc('\r');
     
     for(;;)
     {
@@ -94,7 +95,7 @@ int main(void)
          * UART_NO_DATA is returned when no data is available.
          *
          */
-        c = uart1_getc();
+        c = uart_getc();
         if ( c & UART_NO_DATA )
         {
             /* 
@@ -110,7 +111,7 @@ int main(void)
             if ( c & UART_FRAME_ERROR )
             {
                 /* Framing Error detected, i.e no stop bit detected */
-                uart1_puts_P("UART Frame Error: ");
+                uart_puts_P("UART Frame Error: ");
             }
             if ( c & UART_OVERRUN_ERROR )
             {
@@ -119,7 +120,7 @@ int main(void)
                  * not read by the interrupt handler before the next character arrived,
                  * one or more received characters have been dropped
                  */
-                uart1_puts_P("UART Overrun Error: ");
+                uart_puts_P("UART Overrun Error: ");
             }
             if ( c & UART_BUFFER_OVERFLOW )
             {
@@ -127,12 +128,13 @@ int main(void)
                  * We are not reading the receive buffer fast enough,
                  * one or more received character have been dropped 
                  */
-                uart1_puts_P("Buffer overflow error: ");
+                uart_puts_P("Buffer overflow error: ");
             }
             /* 
              * send received character back
              */
-            uart1_putc( (unsigned char)c );
+            uart_putc( (unsigned char)c );
+			lcd_write_character_4d((unsigned char)c);
         }
     }
     
