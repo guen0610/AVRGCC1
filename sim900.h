@@ -31,7 +31,7 @@
 #include <util/delay.h>
 
 //custom lib
-#include "../uart/uart.h"
+#include "uart.h"
 
 //respons ok / error
 /**

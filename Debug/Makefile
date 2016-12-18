@@ -36,6 +36,7 @@ SUBDIRS :=
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
 ../AVRGCC1.c \
+../sim900.c \
 ../uart.c
 
 
@@ -47,21 +48,25 @@ ASM_SRCS +=
 
 OBJS +=  \
 AVRGCC1.o \
+sim900.o \
 uart.o
 
 
 OBJS_AS_ARGS +=  \
 AVRGCC1.o \
+sim900.o \
 uart.o
 
 
 C_DEPS +=  \
 AVRGCC1.d \
+sim900.d \
 uart.d
 
 
 C_DEPS_AS_ARGS +=  \
 AVRGCC1.d \
+sim900.d \
 uart.d
 
 
@@ -74,6 +79,8 @@ ADDITIONAL_DEPENDENCIES:=
 OUTPUT_FILE_DEP:= ./makedep.mk
 
 # AVR32/GNU C Compiler
+
+
 
 
 

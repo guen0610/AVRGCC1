@@ -6,18 +6,29 @@
  */ 
 
 //header file
+#ifndef F_CPU
+#define F_CPU 8000000UL
+#endif
+
 #include "sim900.h"
 
+void uart1_flush_buffer()
+{
+	while (uart1_getc() != UART_NO_DATA);
+}
 void sim900_init_uart(const uint16_t baudrate)
 {
 	//init uart
-	uart_init(UART_BAUD_SELECT(baudrate, F_CPU));
-}
+	uart1_init(UART_BAUD_SELECT(baudrate, F_CPU));
+	_delay_ms(100);
+	uart1_puts("A");
+	_delay_ms(100);
+	uart1_puts("A");
+	_delay_ms(100);
+	uart1_puts("ATE0");
+	_delay_ms(1000);
+	uart1_flush_buffer();
 
-void uart_flush_buffer()
-{
-	while (uart_getc() != UART_NO_DATA)
-	;
 }
 
 uint8_t sim900_send_cmd_wait_reply(const uint8_t send_from_progmem, const uint8_t *aCmd, const uint8_t
@@ -44,7 +55,7 @@ uint8_t sim900_send_cmd_wait_reply(const uint8_t send_from_progmem, const uint8_
 	//read left buffer data
 	if (aCmd != NULL)
 	{
-		uart_flush_buffer();
+		uart1_flush_buffer();
 	}
 
 	//send command
@@ -52,11 +63,11 @@ uint8_t sim900_send_cmd_wait_reply(const uint8_t send_from_progmem, const uint8_
 	{
 		if (send_from_progmem)
 		{
-			uart_puts_p((const char*)aCmd);
+			uart1_puts_p((const char*)aCmd);
 		}
 		else
 		{
-			uart_puts((const char*)aCmd);
+			uart1_puts((const char*)aCmd);
 		}
 	}
 
@@ -67,7 +78,7 @@ uint8_t sim900_send_cmd_wait_reply(const uint8_t send_from_progmem, const uint8_
 	{
 		//get uart data or timeout
 		uart_tout_cnt = 0;
-		while (((uart_data = uart_getc()) == UART_NO_DATA) && (uart_tout_cnt <
+		while (((uart_data = uart1_getc()) == UART_NO_DATA) && (uart_tout_cnt <
 		aTimeoutMax))
 		//wait data arrive or tout
 		{
@@ -148,9 +159,9 @@ uint8_t sim900_setup(const uint8_t isWaitingDevice)
 	if (respons)
 	{
 		//no cmd echo
-		if ((respons = sim900_send_cmd_wait_reply(1,(const uint8_t*)PSTR("ATE0\r"), (const
-		uint8_t*)RESPON_OK, 500000, 0, NULL)))
-		{
+		//if ((respons = sim900_send_cmd_wait_reply(1,(const uint8_t*)PSTR("ATE0\r"), (const
+		//uint8_t*)RESPON_OK, 500000, 0, NULL)))
+		//{
 			//text mode
 			if ((respons = sim900_send_cmd_wait_reply(1,(const uint8_t*)PSTR("AT+CMGF=1\r"),
 			(const uint8_t*)RESPON_OK, 500000, 0, NULL)))
@@ -164,7 +175,7 @@ uint8_t sim900_setup(const uint8_t isWaitingDevice)
 					if ((respons = sim900_send_cmd_wait_reply(1,(const uint8_t*)
 				PSTR("AT+CLIP=1\r"), (const uint8_t*)RESPON_OK, 500000, 0, NULL))){}
 			}
-		}
+		//}
 	}
 }
 
