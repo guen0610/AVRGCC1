@@ -28,7 +28,7 @@ DESCRIPTION:
 
 int main(void)
 {
-	DDRC = 0xFF;    // lcd pins
+	  DDRC = 0xFF;    // lcd pins
 	// configure the microprocessor pins for the control lines
     lcd_E_ddr |= (1<<lcd_E_bit);                    // E line - output
     lcd_RS_ddr |= (1<<lcd_RS_bit);                  // RS line - output
@@ -41,8 +41,11 @@ int main(void)
     uint8_t answer;
     uint8_t temp_min[3];
     uint8_t temp_max[3];
-	  uint8_t http_respon_data[64];
+	  uint8_t http_respon_data[64]="12,25";
     volatile uint8_t room1_temp;
+    char s[2] = ",";
+    char *token;
+    
     lcd_init_4d();
 	  lcd_write_instruction_4d(lcd_Clear);
     _delay_ms(10);
@@ -83,26 +86,31 @@ int main(void)
 
 
     while(1)
-	{
+	  {
 		sim900_http_send_data(
             HTTP_POST,
             (const uint8_t*)"http://intense-fjord-78468.herokuapp.com/temp",
 			(const uint8_t*)"{\"temp\": 16}",
             64,
             http_respon_data);
-        
-        temp_min[0] = http_respon_data[PARSE_CONST-1];
+        token = strtok(http_respon_data,s);
+        strcpy(temp_min,token);
+        token = strtok(NULL,s);
+        strcpy(temp_max,token);
+       /* temp_min[0] = http_respon_data[PARSE_CONST-1];
         if(http_respon_data[PARSE_CONST]=='\"')
         {
           temp_min[1] = '\0';
-          temp_max[0] = http_respon_data[PARSE_CONST+10];
+          temp_min[2] = '\0';
+          temp_max[0] = http_respon_data[PARSE_CONST+9];
           if(http_respon_data[PARSE_CONST+10]!='\"')
           {
-            temp_max[1] = http_respon_data[PARSE_CONST+11];
+            temp_max[1] = http_respon_data[PARSE_CONST+10];
             temp_max[2] = '\0'; 
           }
           else
-            temp_max[1] = '\0';   
+            temp_max[1] = '\0'; 
+            temp_min[2] = '\0';
         }
         else
         {          
@@ -116,8 +124,7 @@ int main(void)
           } 
           else
             temp_max[1] = '\0'; 
-        }
-        
+        }*/
         lcd_write_instruction_4d(lcd_Clear);
         _delay_ms(10);
         lcd_write_string_4d("main     min: ");
@@ -129,7 +136,6 @@ int main(void)
         lcd_write_string_4d(" ");
         lcd_write_string_4d("max: ");
         lcd_write_string_4d(temp_max);
-        _delay_ms(1000);
 	}
     
 }
