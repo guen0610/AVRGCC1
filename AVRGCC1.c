@@ -38,6 +38,8 @@ int main(void)
     unsigned int c;
     char buffer[7];
     int  num=134;
+    uint8_t answer;
+    uint8_t http_respon_data[64];
 
     lcd_init_4d();
 	lcd_write_instruction_4d(lcd_Clear);
@@ -61,15 +63,30 @@ int main(void)
     sei();
     lcd_write_instruction_4d(lcd_Clear);
     _delay_ms(10);
-	sim900_setup(SETUP_WAIT_INFINITE);
-    _delay_ms(1000);
-	lcd_write_string_4d("Sending sms");
-    sim900_send_sms("+97699667842","hello borld\r\n\x1a");
+    if(sim900_gprs_is_opened())
+    {
+        answer = sim900_gprs_close_connection();
+        _delay_ms(2000);
+    }
+    
+    lcd_write_string_4d("opening gprs");
+        sim900_gprs_open_connection(
+            (const uint8_t*)"internet", (const uint8_t*)"MobiCom ", (const uint8_t*)" ");
+
 
 
     while(1)
 	{
-		lcd_write_character_4d('k');
+		lcd_write_string_4d("a");
+		sim900_http_send_data(
+            HTTP_POST,
+            (const uint8_t*)"http://intense-fjord-78468.herokuapp.com/temp",
+			(const uint8_t*)"{\"temp\": 16}",
+            64,
+            http_respon_data);
+        lcd_write_instruction_4d(lcd_Clear);
+        _delay_ms(10);
+        lcd_write_string_4d(http_respon_data);
 		_delay_ms(1000);
 	}
     

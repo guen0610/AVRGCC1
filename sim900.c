@@ -434,7 +434,7 @@ uint8_t sim900_http_send_data(const uint8_t method, const uint8_t *aurl, const u
 	if(method)
 	{
 		if (!sim900_send_cmd_wait_reply(1,(const uint8_t*)
-		PSTR("AT+HTTPPARA=\"CONTENT\",\"application/x-www-form-urlencoded\"\r"), (const
+		PSTR("AT+HTTPPARA=\"CONTENT\",\"application/json\"\r"), (const
 		uint8_t*)RESPON_OK, 5000000, 0, NULL))
 		{
 			sim900_http_terminate();
