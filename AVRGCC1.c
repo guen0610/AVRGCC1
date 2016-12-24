@@ -24,7 +24,7 @@ DESCRIPTION:
 
 /* Define UART buad rate here */
 #define UART_BAUD_RATE      9600      
-
+#define PARSE_CONST         9
 
 int main(void)
 {
@@ -39,10 +39,12 @@ int main(void)
     char buffer[7];
     int  num=134;
     uint8_t answer;
-    uint8_t http_respon_data[64];
-
+    uint8_t temp_min[3];
+    uint8_t temp_max[3];
+	  uint8_t http_respon_data[64];
+    volatile uint8_t room1_temp;
     lcd_init_4d();
-	lcd_write_instruction_4d(lcd_Clear);
+	  lcd_write_instruction_4d(lcd_Clear);
     _delay_ms(10);
     lcd_write_string_4d("main");
     uint8_t response = 0;
@@ -54,9 +56,12 @@ int main(void)
      *  UART_BAUD_SELECT_DOUBLE_SPEED() ( double speed mode)
      */
     sim900_init_uart(9600);
-
-
-    
+		
+	     // memset(temp_min,'\0',2);
+        //memset(temp_max,'\0',2);
+        
+//lcd_write_string_4d(" ");
+		    //lcd_write_string_4d(temp_max);
     /*
      * now enable interrupt, since UART library is interrupt controlled
      */
@@ -69,25 +74,62 @@ int main(void)
         _delay_ms(2000);
     }
     
-    lcd_write_string_4d("opening gprs");
+    lcd_write_string_4d("Opening GPRS...");
         sim900_gprs_open_connection(
             (const uint8_t*)"internet", (const uint8_t*)"MobiCom ", (const uint8_t*)" ");
-
+	lcd_write_instruction_4d(lcd_Clear);
+    _delay_ms(10);
+	lcd_write_string_4d("Initializing HTTP...");
 
 
     while(1)
 	{
-		lcd_write_string_4d("a");
 		sim900_http_send_data(
             HTTP_POST,
             (const uint8_t*)"http://intense-fjord-78468.herokuapp.com/temp",
 			(const uint8_t*)"{\"temp\": 16}",
             64,
             http_respon_data);
+        
+        temp_min[0] = http_respon_data[PARSE_CONST-1];
+        if(http_respon_data[PARSE_CONST]=='\"')
+        {
+          temp_min[1] = '\0';
+          temp_max[0] = http_respon_data[PARSE_CONST+10];
+          if(http_respon_data[PARSE_CONST+10]!='\"')
+          {
+            temp_max[1] = http_respon_data[PARSE_CONST+11];
+            temp_max[2] = '\0'; 
+          }
+          else
+            temp_max[1] = '\0';   
+        }
+        else
+        {          
+          temp_min[1] = http_respon_data[PARSE_CONST];
+          temp_min[2] = '\0';
+          temp_max[0] = http_respon_data[PARSE_CONST+11];
+          if(http_respon_data[PARSE_CONST+11]!='\"')
+          {
+            temp_max[1] = http_respon_data[PARSE_CONST+12];
+            temp_max[2] = '\0'; 
+          } 
+          else
+            temp_max[1] = '\0'; 
+        }
+        
         lcd_write_instruction_4d(lcd_Clear);
         _delay_ms(10);
-        lcd_write_string_4d(http_respon_data);
-		_delay_ms(1000);
+        lcd_write_string_4d("main     min: ");
+        lcd_write_string_4d(temp_min);
+        lcd_write_instruction_4d(lcd_SetCursor|lcd_LineTwo);
+		    _delay_ms(10);
+        lcd_write_string_4d("temp:   ");
+        lcd_write_string_4d(room1_temp);
+        lcd_write_string_4d(" ");
+        lcd_write_string_4d("max: ");
+        lcd_write_string_4d(temp_max);
+        _delay_ms(1000);
 	}
     
 }
