@@ -363,7 +363,7 @@ uint8_t sim900_http_terminate()
     uint8_t*)RESPON_OK, 5000000, 0, NULL);
 }
 
-uint8_t sim900_http_init(const uint8_t method, const uint8_t *aurl, const uint8_t *adata, const  uint8_t max_out_len, uint8_t *arespon_out)
+uint8_t sim900_http_send_data(const uint8_t method, const uint8_t *aurl, const uint8_t *adata, const  uint8_t max_out_len, uint8_t *arespon_out)
 {
 	#define HTTP_PARA_URL "AT+HTTPPARA=\"URL\","
 	const uint8_t MAX_BUFFER = 100;
@@ -375,6 +375,12 @@ uint8_t sim900_http_init(const uint8_t method, const uint8_t *aurl, const uint8_
 	if (cmdx == NULL)
 	{
 		return 0;
+	}
+
+	//set init result
+	if (arespon_out != NULL)
+	{
+		memset(arespon_out, '\0', max_out_len *sizeof(uint8_t));
 	}
 
 	//check is connected
@@ -436,18 +442,6 @@ uint8_t sim900_http_init(const uint8_t method, const uint8_t *aurl, const uint8_
 			return 0;
 		}
 		
-}
-uint8_t sim900_http_send_data(const uint8_t method, const uint8_t *aurl, const uint8_t *adata, const  uint8_t max_out_len, uint8_t *arespon_out)
-{
-		const uint8_t MAX_BUFFER = 100;
-		uint8_t respon = 0;
-		uint16_t num_data = 0;
-		uint8_t *cmdx = (uint8_t*) calloc(MAX_BUFFER,sizeof(uint8_t));
-		//set init result
-		if (arespon_out != NULL)
-		{
-			memset(arespon_out, '\0', max_out_len *sizeof(uint8_t));
-		}
 		//http post data
 		memset(cmdx, '\0', MAX_BUFFER);
 		snprintf((char*)cmdx, MAX_BUFFER, "AT+HTTPDATA=%d,20000\r", strlen((const
