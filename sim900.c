@@ -11,7 +11,6 @@
 #endif
 
 #include "sim900.h"
-
 void uart1_flush_buffer()
 {
 	while (uart1_getc() != UART_NO_DATA);
@@ -362,25 +361,17 @@ uint8_t sim900_http_terminate()
   return sim900_send_cmd_wait_reply(1,(const uint8_t*)PSTR("AT+HTTPTERM\r"), (const
     uint8_t*)RESPON_OK, 5000000, 0, NULL);
 }
-
-uint8_t sim900_http_send_data(const uint8_t method, const uint8_t *aurl, const uint8_t *adata, const  uint8_t max_out_len, uint8_t *arespon_out)
+uint8_t sim900_http_init(const uint8_t method, const uint8_t *aurl, const uint8_t *adata, const  uint8_t max_out_len, uint8_t *arespon_out)
 {
 	#define HTTP_PARA_URL "AT+HTTPPARA=\"URL\","
 	const uint8_t MAX_BUFFER = 100;
 	uint8_t respon = 0;
 	uint16_t num_data = 0;
 	uint8_t *cmdx = (uint8_t*) calloc(MAX_BUFFER,sizeof(uint8_t));
-	
 	//buffer created?
 	if (cmdx == NULL)
 	{
 		return 0;
-	}
-
-	//set init result
-	if (arespon_out != NULL)
-	{
-		memset(arespon_out, '\0', max_out_len *sizeof(uint8_t));
 	}
 
 	//check is connected
@@ -411,7 +402,25 @@ uint8_t sim900_http_send_data(const uint8_t method, const uint8_t *aurl, const u
 		return 0;
 	}
 
-	//http parameter url
+
+	return respon;
+}
+uint8_t sim900_http_send_data(const uint8_t method, const uint8_t *aurl, const uint8_t *adata, const  uint8_t max_out_len, uint8_t *arespon_out)
+{
+	#define HTTP_PARA_URL "AT+HTTPPARA=\"URL\","
+	const uint8_t MAX_BUFFER = 100;
+	uint8_t respon = 0;
+	uint16_t num_data = 0;
+	uint8_t *cmdx = (uint8_t*) calloc(MAX_BUFFER,sizeof(uint8_t));
+	
+	//set content type for post only
+	//set init result
+
+	if (arespon_out != NULL)
+	{
+		memset(arespon_out, '\0', max_out_len *sizeof(uint8_t));
+	}
+		//http parameter url
 	memset(cmdx, '\0', MAX_BUFFER);
 	//snprintf((char*)cmdx, MAX_BUFFER, (method ? "%s\"%s\"\r":"%s\"%s?%s\"\r"), HTTP_PARA_URL, aurl,(method ? ((char*)""):adata));
 	if (method) //post
@@ -430,7 +439,6 @@ uint8_t sim900_http_send_data(const uint8_t method, const uint8_t *aurl, const u
 		return 0;
 	}
 
-	//set content type for post only
 	if(method)
 	{
 		if (!sim900_send_cmd_wait_reply(1,(const uint8_t*)

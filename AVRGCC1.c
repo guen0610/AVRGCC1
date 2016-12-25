@@ -82,7 +82,13 @@ int main(void)
             (const uint8_t*)"internet", (const uint8_t*)"MobiCom ", (const uint8_t*)" ");
 	lcd_write_instruction_4d(lcd_Clear);
     _delay_ms(10);
-	lcd_write_string_4d("Initializing HTTP...");
+	//lcd_write_string_4d("HTTP init...");
+
+sim900_http_init(HTTP_POST,
+            (const uint8_t*)"http://intense-fjord-78468.herokuapp.com/temp",
+			(const uint8_t*)"{\"temp\": 16}",
+            64,
+            http_respon_data);
 
 
     while(1)
@@ -136,6 +142,7 @@ int main(void)
         lcd_write_string_4d(" ");
         lcd_write_string_4d("max: ");
         lcd_write_string_4d(temp_max);
+        _delay_ms(5000);
 	}
     
 }
