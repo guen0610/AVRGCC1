@@ -198,7 +198,6 @@ extern uint8_t sim900_http_terminate();
 * @param	*arespon_out	Respon buffer. Set it to NULL if you don't want to read any data from server
 * @return	uint8_t			0=fail, 1=success
 */
-extern uint8_t sim900_http_init(const uint8_t method, const uint8_t *aurl, const uint8_t *adata, const  uint8_t max_out_len, uint8_t *arespon_out);
 extern uint8_t sim900_http_send_data(const uint8_t method, const uint8_t *aurl, const uint8_t *adata, const  uint8_t max_out_len, uint8_t *arespon_out);
 
 /**
@@ -235,7 +234,6 @@ typedef struct sim900_struct
 		
 	//http
 	uint8_t (*http_terminate)();
-	uint8_t (*http_init)(const uint8_t method, const uint8_t *aurl, const uint8_t *adata, const  uint8_t max_out_len, uint8_t *arespon_out);
 	uint8_t (*http_send_data)(const uint8_t method, const uint8_t *aurl, const uint8_t *adata, const  uint8_t max_out_len, uint8_t *arespon_out);
 
 } sim900_t;
@@ -250,7 +248,6 @@ static const sim900_t sim900_struct_default = {
 	.gprs_is_opened = sim900_gprs_is_opened,
 	.gprs_open_connection = sim900_gprs_open_connection,
 	.gprs_start_connection = sim900_gprs_start_connection,
-	.http_init = sim900_http_init,
 	.http_send_data = sim900_http_send_data,
 	.http_terminate = sim900_http_terminate,
 	.initialize = sim900_setup,
