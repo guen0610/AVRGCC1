@@ -32,6 +32,7 @@
 
 //custom lib
 #include "uart.h"
+#include "lcd.h"
 
 //respons ok / error
 /**
@@ -235,7 +236,6 @@ typedef struct sim900_struct
 	//http
 	uint8_t (*http_terminate)();
 	uint8_t (*http_send_data)(const uint8_t method, const uint8_t *aurl, const uint8_t *adata, const  uint8_t max_out_len, uint8_t *arespon_out);
-
 } sim900_t;
 
 /**

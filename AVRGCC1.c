@@ -45,7 +45,7 @@ int main(void)
     volatile uint8_t room1_temp;
     char s[2] = ",";
     char *token;
-    
+    char show[3];
     lcd_init_4d();
     lcd_write_instruction_4d(lcd_Clear);
     _delay_ms(10);
@@ -80,62 +80,45 @@ int main(void)
     lcd_write_string_4d("Opening GPRS...");
         sim900_gprs_open_connection(
             (const uint8_t*)"internet", (const uint8_t*)"MobiCom ", (const uint8_t*)" ");
-  lcd_write_instruction_4d(lcd_Clear);
+    lcd_write_instruction_4d(lcd_Clear);
     _delay_ms(10);
-  lcd_write_string_4d("Initializing HTTP...");
-
-
+    lcd_write_string_4d("HTTP init");
+    uint8_t counter = 0;
     while(1)
     {
-    sim900_http_send_data(
+		uint8_t res;
+        counter++;
+        char buffer[64];
+        snprintf(buffer,sizeof(buffer),"{\"temp\": 22}");
+    res = sim900_http_send_data(
             HTTP_POST,
             (const uint8_t*)"http://intense-fjord-78468.herokuapp.com/temp",
-      (const uint8_t*)"{\"temp\": 16}",
+      (const uint8_t*)buffer,
             64,
             http_respon_data);
+			
+		if(res)
+		{
         token = strtok(http_respon_data,s);
         strcpy(temp_min,token);
         token = strtok(NULL,s);
         strcpy(temp_max,token);
-       /* temp_min[0] = http_respon_data[PARSE_CONST-1];
-        if(http_respon_data[PARSE_CONST]=='\"')
-        {
-          temp_min[1] = '\0';
-          temp_min[2] = '\0';
-          temp_max[0] = http_respon_data[PARSE_CONST+9];
-          if(http_respon_data[PARSE_CONST+10]!='\"')
-          {
-            temp_max[1] = http_respon_data[PARSE_CONST+10];
-            temp_max[2] = '\0'; 
-          }
-          else
-            temp_max[1] = '\0'; 
-            temp_min[2] = '\0';
-        }
-        else
-        {          
-          temp_min[1] = http_respon_data[PARSE_CONST];
-          temp_min[2] = '\0';
-          temp_max[0] = http_respon_data[PARSE_CONST+11];
-          if(http_respon_data[PARSE_CONST+11]!='\"')
-          {
-            temp_max[1] = http_respon_data[PARSE_CONST+12];
-            temp_max[2] = '\0'; 
-          } 
-          else
-            temp_max[1] = '\0'; 
-        }*/
+        
+        itoa(counter,show,10);
+      
         lcd_write_instruction_4d(lcd_Clear);
         _delay_ms(10);
         lcd_write_string_4d("main     min: ");
         lcd_write_string_4d(temp_min);
         lcd_write_instruction_4d(lcd_SetCursor|lcd_LineTwo);
         _delay_ms(10);
-        lcd_write_string_4d("temp:   ");
-        lcd_write_string_4d(room1_temp);
-        lcd_write_string_4d(" ");
+        lcd_write_string_4d("Room1: ");
+        //lcd_write_string_4d(show);
+        lcd_write_string_4d("  ");
         lcd_write_string_4d("max: ");
         lcd_write_string_4d(temp_max);
+        _delay_ms(1000);
+		}		
   }
     
 }

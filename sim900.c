@@ -11,6 +11,7 @@
 #endif
 
 #include "sim900.h"
+//#include "lcd.h"
 
 void uart1_flush_buffer()
 {
@@ -28,7 +29,6 @@ void sim900_init_uart(const uint16_t baudrate)
 	uart1_puts("ATE0");
 	_delay_ms(1000);
 	uart1_flush_buffer();
-
 }
 
 uint8_t sim900_send_cmd_wait_reply(const uint8_t send_from_progmem, const uint8_t *aCmd, const uint8_t
@@ -439,6 +439,10 @@ uint8_t sim900_http_send_data(const uint8_t method, const uint8_t *aurl, const u
 		{
 			sim900_http_terminate();
 			free(cmdx);
+			lcd_write_instruction_4d(lcd_Clear);
+			_delay_ms(10);
+			lcd_write_string_4d("a");
+			_delay_ms(2000);
 			return 0;
 		}
 		
@@ -451,6 +455,10 @@ uint8_t sim900_http_send_data(const uint8_t method, const uint8_t *aurl, const u
 		{
 			sim900_http_terminate();
 			free(cmdx);
+			lcd_write_instruction_4d(lcd_Clear);
+			_delay_ms(10);
+			lcd_write_string_4d("b");
+			_delay_ms(2000);
 			return 0;
 		}
 
@@ -460,6 +468,10 @@ uint8_t sim900_http_send_data(const uint8_t method, const uint8_t *aurl, const u
 		{
 			sim900_http_terminate();
 			free(cmdx);
+			lcd_write_instruction_4d(lcd_Clear);
+			_delay_ms(10);
+			lcd_write_string_4d("c");
+			_delay_ms(2000);
 			return 0;
 		}
 	}

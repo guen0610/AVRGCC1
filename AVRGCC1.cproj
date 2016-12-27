@@ -61,6 +61,9 @@
     <Compile Include="AVRGCC1.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="lcd.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="lcd.h">
       <SubType>compile</SubType>
     </Compile>
